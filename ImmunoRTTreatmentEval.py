@@ -65,8 +65,8 @@ errorMerged = dp.merge_lists([errorMerged, errorPD])
 sample_size = 500
 all_res_list = []
 IT = (False, False)
-RT_fractions = 2
-PD_fractions = 1
+RT_fractions = 1
+PD_fractions = 2
 file_name = 'RT ' + str(RT_fractions) + ' PD ' + str(PD_fractions) + ' fraction.csv'
 schedule_list, DList = get_treatment_and_dose(50, RT_fractions, param, PD_fractions)
 paramNew = list(param)
@@ -82,17 +82,18 @@ def evaluate_patient(i, k):
         paramNew[j] = min(max(np.random.lognormal(mean=logNormalParams[0], sigma = logNormalParams[1]), 0.8*param[j]), 1.2*param[j])
   if IT == (True, True):
     paramNew[22] = 0.2
-    paramNew[32] = 0.4
+    paramNew[32] = 0.4/PD_fractions
   elif IT == (False, True):
     paramNew[22] = 0.2
     paramNew[32] = 0
   elif IT == (True, False):
     paramNew[22] = 0
-    paramNew[32] = 0.4
+    paramNew[32] = 0.4/PD_fractions
   else:
     paramNew[22] = 0
     paramNew[32] = 0
     #print(paramNew)
+  p1 = 0.4/PD_fractions
   D = DList[i]
   t_f2 = max(schedule_list[i][0][0], schedule_list[i][1][0]) + 30
   t_rad = np.array(schedule_list[i][0])
@@ -131,7 +132,7 @@ iterations = len(schedule_list)  # Or any other number of iterations
 print(param)
 # Use a ThreadPoolExecutor to run the iterations in parallel
 with concurrent.futures.ThreadPoolExecutor() as executor:
-    data = list(executor.map(trial_treatment, range(iterations)))
+    data = list(executor.map(trial_treatment, range(2200)))
 
     #print(data)
     # Retrieve results from completed futures
